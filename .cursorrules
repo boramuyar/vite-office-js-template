@@ -1,0 +1,108 @@
+You are proficient in TypeScript, office.js, React, Shadcn, TailwindCSS, and Vite.
+
+Coding Style and structure
+Concise TypeScript: Write concise, technical TypeScript code with accurate examples.
+Programming Patterns: Utilize functional and declarative programming; avoid classes.
+Modularization: Prefer iteration and modularization over code duplication.
+Naming Conventions: Use descriptive variable names with auxiliary verbs (e.g., isLoading, hasError).
+File Structure: Organize files with exports for modules, components, subcomponents, helpers, static content, and types.
+Implement proper error handling in async operations
+Consider edge cases and error scenarios
+For internationalization use react-intl and consider the id of the message should be statically evaluate on compile time. It means that the id should be a constant string.
+
+Naming Conventions
+General Rules
+
+- Use PascalCase for:
+  - Components
+  - Type definitions
+  - Interfaces
+- Use kebab-case for:
+  - Directory names (e.g., components/auth-wizard)
+  - File names (e.g., user-profile.tsx)
+- Use camelCase for:
+  - Variables
+  - Functions
+  - Methods
+  - Hooks
+  - Properties
+  - Props
+- Use UPPERCASE for:
+  - Environment variables
+  - Constants
+  - Global configurations
+
+Specific Naming Patterns
+
+- Prefix event handlers with 'handle': handleClick, handleSubmit
+- Prefix boolean variables with verbs: isLoading, hasError, canSubmit
+- Prefix custom hooks with 'use': useAuth, useForm
+- Use complete words over abbreviations except for:
+  - err (error)
+  - req (request)
+  - res (response)
+  - props (properties)
+  - ref (reference)
+
+React Best Practices
+Component Architecture
+
+- Use functional components with TypeScript interfaces
+- Define components using the function keyword
+- Extract reusable logic into custom hooks
+- Implement proper component composition
+- Use React.memo() strategically for performance
+- Implement proper cleanup in useEffect hooks
+
+React Performance Optimization
+
+- Use useCallback for memoizing callback functions
+- Implement useMemo for expensive computations
+- Avoid inline function definitions in JSX
+- Implement code splitting using dynamic imports
+- Implement proper key props in lists (avoid using index as key)
+
+TypeScript Usage
+Utilize TypeScript for all code; prefer interfaces over types.
+Avoid enums; prefer maps.
+Leverage functional components with TypeScript interfaces.
+Implement strict TypeScript checks
+Define clear interfaces for component props, state, and Redux state structure.
+Use type guards to handle potential undefined or null values safely.
+Apply generics to functions, actions, and slices where type flexibility is needed.
+Utilize TypeScript utility types (Partial, Pick, Omit) for cleaner and reusable code.
+Prefer interface over type for defining object structures, especially when extending.
+Use mapped types for creating variations of existing types dynamically.
+
+Syntax and Formatting
+Use the function keyword for pure functions.
+Avoid unnecessary curly braces in conditionals; utilize concise syntax for simple statements.
+Write declarative JSX.
+
+Code Style
+
+- Eliminate unused variables
+- Add space after keywords
+- Add space before function declaration parentheses
+- Always use strict equality (===) instead of loose equality (==)
+- Space infix operators
+- Add space after commas
+- Keep else statements on the same line as closing curly braces
+- Use curly braces for multi-line if statements
+- Always handle error parameters in callbacks
+- Limit line length to 80 characters
+- Use trailing commas in multiline object/array literals
+
+Performance Optimization
+Minimize usage of useEffect, and setState
+Wrap client components in Suspense with fallback.
+Implement dynamic loading for non-critical components.
+Optimize images: use WebP format, include size data, and implement lazy loading.
+
+Benefits:
+Maintains a clean and organized project structure.
+Eases navigation and management of components and pages.
+Adheres to common industry standards for better collaboration.
+Simplifies the creation of new pages and components.
+Increases modularity and scalability as the application grows.
+Upholds the principle of separation of concerns.
