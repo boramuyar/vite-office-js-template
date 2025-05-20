@@ -1,7 +1,10 @@
 import type { Plugin, ResolvedConfig, ViteDevServer } from "vite";
 import * as esbuild from "esbuild";
 // Import the 'generate' function and IGenerateResult type
-import { generateCustomFunctionsMetadata, type IGenerateResult } from "custom-functions-metadata";
+import {
+  generateCustomFunctionsMetadata,
+  type IGenerateResult,
+} from "custom-functions-metadata";
 import path from "path";
 
 export interface OfficeFunctionsPluginOptions {
@@ -15,8 +18,13 @@ export interface OfficeFunctionsPluginOptions {
 const DEFAULT_JS_NAME = "functions.js";
 const DEFAULT_JSON_NAME = "functions.json";
 
-export default function officeFunctionsPlugin(options: OfficeFunctionsPluginOptions): Plugin {
-  if (!options.input || (Array.isArray(options.input) && options.input.length === 0)) {
+export default function officeFunctionsPlugin(
+  options: OfficeFunctionsPluginOptions
+): Plugin {
+  if (
+    !options.input ||
+    (Array.isArray(options.input) && options.input.length === 0)
+  ) {
     throw new Error('[vite-plugin-office-functions] Missing "input" option.');
   }
 
@@ -30,7 +38,9 @@ export default function officeFunctionsPlugin(options: OfficeFunctionsPluginOpti
   let generateResult: IGenerateResult | null = null;
 
   const getEntryPoints = () => {
-    const inputs = Array.isArray(options.input) ? options.input : [options.input];
+    const inputs = Array.isArray(options.input)
+      ? options.input
+      : [options.input];
     return inputs.map((p) => path.resolve(viteConfig.root, p));
   };
 
@@ -50,7 +60,9 @@ export default function officeFunctionsPlugin(options: OfficeFunctionsPluginOpti
 
   async function regenerateFiles(isBuild: boolean, server?: ViteDevServer) {
     if (!viteConfig) {
-      console.warn("[vite-plugin-office-functions] Vite config not resolved. Skipping generation.");
+      console.warn(
+        "[vite-plugin-office-functions] Vite config not resolved. Skipping generation."
+      );
       return;
     }
 
@@ -60,13 +72,19 @@ export default function officeFunctionsPlugin(options: OfficeFunctionsPluginOpti
     // 1. Generate functions.json
     try {
       // The `generate` function returns a Promise<IGenerateResult>
-      const result: IGenerateResult = await generateCustomFunctionsMetadata(metadataInputFiles, logMetadata);
+      const result: IGenerateResult = await generateCustomFunctionsMetadata(
+        metadataInputFiles,
+        logMetadata
+      );
 
       // Store the result for adding associations later
       generateResult = result;
 
       if (result.errors && result.errors.length > 0) {
-        console.error(`[vite-plugin-office-functions] Errors during ${outputJsonName} generation:`, result.errors.join("\n"));
+        console.error(
+          `[vite-plugin-office-functions] Errors during ${outputJsonName} generation:`,
+          result.errors.join("\n")
+        );
         generatedJsonContent = JSON.stringify({
           error: `Failed to generate ${outputJsonName}`,
           details: result.errors,
@@ -109,14 +127,6 @@ export default function officeFunctionsPlugin(options: OfficeFunctionsPluginOpti
       if (esbuildResult.outputFiles && esbuildResult.outputFiles.length > 0) {
         let jsContent = esbuildResult.outputFiles[0].text;
 
-        // Add function associations if we have results
-        if (generateResult && generateResult.associate && generateResult.associate.length > 0) {
-          // Add all associations at the end of the file
-          generateResult.associate.forEach((association) => {
-            jsContent += `\nCustomFunctions.associate("${association.id}", ${association.functionName});`;
-          });
-        }
-
         generatedJsContent = jsContent;
         if (!isBuild && server && generatedJsContent) {
           server.ws.send({ type: "full-reload" });
@@ -145,13 +155,17 @@ export default function officeFunctionsPlugin(options: OfficeFunctionsPluginOpti
 
     async buildStart() {
       if (viteConfig.command === "build") {
-        console.log(`[vite-plugin-office-functions] Generating ${outputJsName} and ${outputJsonName} for build...`);
+        console.log(
+          `[vite-plugin-office-functions] Generating ${outputJsName} and ${outputJsonName} for build...`
+        );
         await regenerateFiles(true);
       }
     },
 
     async configureServer(server) {
-      console.log(`[vite-plugin-office-functions] Generating ${outputJsName} and ${outputJsonName} for dev server...`);
+      console.log(
+        `[vite-plugin-office-functions] Generating ${outputJsName} and ${outputJsonName} for dev server...`
+      );
       await regenerateFiles(false, server);
 
       const inputFilesToWatch = getEntryPoints();
@@ -161,8 +175,14 @@ export default function officeFunctionsPlugin(options: OfficeFunctionsPluginOpti
 
       const handleFileChange = async (changedPath: string) => {
         const normalizedChangedPath = path.normalize(changedPath);
-        if (inputFilesToWatch.some((inputFile) => path.normalize(inputFile) === normalizedChangedPath)) {
-          console.log(`[vite-plugin-office-functions] Detected change in ${path.relative(viteConfig.root, changedPath)}. Regenerating...`);
+        if (
+          inputFilesToWatch.some(
+            (inputFile) => path.normalize(inputFile) === normalizedChangedPath
+          )
+        ) {
+          console.log(
+            `[vite-plugin-office-functions] Detected change in ${path.relative(viteConfig.root, changedPath)}. Regenerating...`
+          );
           await regenerateFiles(false, server);
         }
       };
@@ -173,16 +193,24 @@ export default function officeFunctionsPlugin(options: OfficeFunctionsPluginOpti
       server.middlewares.use(async (req, res, next) => {
         if (req.url === `/${outputJsonName}`) {
           if (generatedJsonContent) {
-            return res.writeHead(200, { "Content-Type": "application/json" }).end(generatedJsonContent);
+            return res
+              .writeHead(200, { "Content-Type": "application/json" })
+              .end(generatedJsonContent);
           }
-          console.warn(`[vite-plugin-office-functions] ${outputJsonName} requested but not generated.`);
+          console.warn(
+            `[vite-plugin-office-functions] ${outputJsonName} requested but not generated.`
+          );
           return res.writeHead(404).end("Not Found");
         }
         if (req.url === `/${outputJsName}`) {
           if (generatedJsContent) {
-            return res.writeHead(200, { "Content-Type": "application/javascript" }).end(generatedJsContent);
+            return res
+              .writeHead(200, { "Content-Type": "application/javascript" })
+              .end(generatedJsContent);
           }
-          console.warn(`[vite-plugin-office-functions] ${outputJsName} requested but not generated.`);
+          console.warn(
+            `[vite-plugin-office-functions] ${outputJsName} requested but not generated.`
+          );
           return res.writeHead(404).end("Not Found");
         }
         next();
@@ -198,7 +226,9 @@ export default function officeFunctionsPlugin(options: OfficeFunctionsPluginOpti
             source: generatedJsonContent,
           });
         } else {
-          console.warn(`[vite-plugin-office-functions] No content for ${outputJsonName} to emit for build.`);
+          console.warn(
+            `[vite-plugin-office-functions] No content for ${outputJsonName} to emit for build.`
+          );
         }
         if (generatedJsContent) {
           this.emitFile({
@@ -207,7 +237,9 @@ export default function officeFunctionsPlugin(options: OfficeFunctionsPluginOpti
             source: generatedJsContent,
           });
         } else {
-          console.warn(`[vite-plugin-office-functions] No content for ${outputJsName} to emit for build.`);
+          console.warn(
+            `[vite-plugin-office-functions] No content for ${outputJsName} to emit for build.`
+          );
         }
       }
     },
