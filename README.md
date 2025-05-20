@@ -88,11 +88,15 @@ This Office Add-in template provides a modern, fast, and efficient development e
     ```
 
 4.  **Start the development server and sideload the add-in:**
+
     ```bash
     pnpm dev  # Starts the Vite development server
     pnpm start # Sideloads the add-in into Office (e.g., Excel, Word)
     ```
+
     After running `pnpm run start`, follow the instructions in the terminal to open the Office application with your add-in loaded. The Vite dev server (`pnpm run dev`) will provide the add-in's web content with HMR.
+
+    DO NOT FORGET TO RUN `pnpm stop` TO REMOVE SIDELOADED ADD-IN. As it won't be removed automatically.
 
 ## Available Scripts
 
@@ -124,3 +128,15 @@ In the project directory, you can run the following commands:
 
 - **`pnpm run auth`**
   - Executes the `./scripts/private-registry-setup.sh` script. This is likely used to configure authentication for a private npm registry if your project uses private packages.
+
+## Custom Functions
+
+This package includes a tool for generating metadata for Excel custom functions. Just define your custom functions in the `src/functions/functions.ts` file and start dev server or build the project to generate the metadata file.
+
+Do not forget to associate functions with CustomFunctions runtime.
+
+```typescript
+CustomFunctions.associate("ADD", function (a, b) {
+  return a + b;
+});
+```
